@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
-    id 'com.diffplug.spotless' version '5.17.0'
+    id 'com.diffplug.spotless' version '6.12.0'
     id "com.peterabeles.gversion" version "1.10"
 }
 
@@ -107,9 +107,7 @@ gversion {
     indent       = "  "
 }
 
-configurations.all {
-    exclude group: "edu.wpi.first.wpilibj"
-}
+
 
 task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
     mainClass = "org.littletonrobotics.junction.CheckInstall"
@@ -144,6 +142,9 @@ dependencies {
     nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
+
+    def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
+    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testImplementation 'org.mockito:mockito-core:5.8.0'
