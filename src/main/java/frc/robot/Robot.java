@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LoggedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants.DriveConstants;
 
@@ -16,7 +16,7 @@ import frc.robot.Constants.DriveConstants;
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private DifferentialDrive m_robotDrive;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     SendableRegistry.addChild(m_robotDrive, m_leftMotor);
     SendableRegistry.addChild(m_robotDrive, m_rightMotor);
+    SendableRegistry.addChild(m_robotDrive, m_leftMotor2);
+    SendableRegistry.addChild(m_robotDrive, m_rightMotor2);
 
     m_leftMotor2.follow(m_leftMotor);
     m_rightMotor2.follow(m_rightMotor);
