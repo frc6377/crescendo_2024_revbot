@@ -10,6 +10,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Constants.DriveConstants;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
@@ -20,11 +21,9 @@ public class Robot extends TimedRobot {
   private Joystick m_leftStick;
   private Joystick m_rightStick;
 
-  private final VictorSPX m_leftMotor = new VictorSPX(0);
-  // private final PWMSparkMax m_rightMotor = new PWMSparkMax(1);
-  private final VictorSPX m_rightMotor = new VictorSPX(0);
+  private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.kLeftMotorPort);
+  private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.kRightMotorPort);
 
-  VictorSPX motor = new VictorSPX(0);
 
   @Override
   public void robotInit() {
@@ -36,7 +35,6 @@ public class Robot extends TimedRobot {
     // gearbox is constructed, you might have to invert the left side instead.
     m_rightMotor.setInverted(true);
 
-    // m_robotDrive = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
     m_robotDrive =
         new DifferentialDrive(
             speed -> m_leftMotor.set(ControlMode.PercentOutput, speed),
