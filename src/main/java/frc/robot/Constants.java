@@ -22,5 +22,6 @@ public final class Constants {
     public static final int kLeftMotorPort2 = 2;
     public static final int kRightMotorPort = 3;
     public static final int kRightMotorPort2 = 4;
+    public static final int driverJoystickPort = 0;
   }
 }

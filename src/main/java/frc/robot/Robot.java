@@ -7,10 +7,10 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.Joystick;
-import org.littletonrobotics.junction.LoggedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants.DriveConstants;
+import org.littletonrobotics.junction.LoggedRobot;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
@@ -18,8 +18,7 @@ import frc.robot.Constants.DriveConstants;
  */
 public class Robot extends LoggedRobot {
   private DifferentialDrive m_robotDrive;
-  private Joystick m_leftStick;
-  private Joystick m_rightStick;
+  private XboxController m_DriverJoystick;
 
   private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.kLeftMotorPort);
   private final VictorSPX m_leftMotor2 = new VictorSPX(DriveConstants.kLeftMotorPort2);
@@ -47,12 +46,10 @@ public class Robot extends LoggedRobot {
             speed -> m_leftMotor.set(ControlMode.PercentOutput, speed),
             speed -> m_rightMotor.set(ControlMode.PercentOutput, speed));
 
-    m_leftStick = new Joystick(0);
-    m_rightStick = new Joystick(1);
+    m_DriverJoystick = new XboxController(DriveConstants.driverJoystickPort);
   }
 
-  @Override
   public void teleopPeriodic() {
-    m_robotDrive.tankDrive(-m_leftStick.getY(), -m_rightStick.getY());
+    m_robotDrive.tankDrive(-m_DriverJoystick.getLeftY(), -m_DriverJoystick.getRightY());
   }
 }
