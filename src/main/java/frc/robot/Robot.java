@@ -24,7 +24,6 @@ public class Robot extends TimedRobot {
   private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.kLeftMotorPort);
   private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.kRightMotorPort);
 
-
   @Override
   public void robotInit() {
     SendableRegistry.addChild(m_robotDrive, m_leftMotor);
