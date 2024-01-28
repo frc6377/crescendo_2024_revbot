@@ -22,17 +22,23 @@ public class Robot extends TimedRobot {
   private Joystick m_rightStick;
 
   private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.kLeftMotorPort);
+  private final VictorSPX m_leftMotor2 = new VictorSPX(DriveConstants.kLeftMotorPort2);
   private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.kRightMotorPort);
+  private final VictorSPX m_rightMotor2 = new VictorSPX(DriveConstants.kRightMotorPort2);
 
   @Override
   public void robotInit() {
     SendableRegistry.addChild(m_robotDrive, m_leftMotor);
     SendableRegistry.addChild(m_robotDrive, m_rightMotor);
 
+    m_leftMotor2.follow(m_leftMotor);
+    m_rightMotor2.follow(m_rightMotor);
+
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
     m_rightMotor.setInverted(true);
+    m_rightMotor2.setInverted(true);
 
     m_robotDrive =
         new DifferentialDrive(
