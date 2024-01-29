@@ -56,6 +56,6 @@ public class Robot extends LoggedRobot {
   }
 
   public void teleopPeriodic() {
-    m_robotDrive.tankDrive(-m_DriverJoystick.getLeftY(), -m_DriverJoystick.getRightY());
+    m_robotDrive.arcadeDrive(-m_DriverJoystick.getLeftY(), -m_DriverJoystick.getRightX());
   }
 }
