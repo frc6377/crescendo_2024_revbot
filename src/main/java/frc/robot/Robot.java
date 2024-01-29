@@ -11,6 +11,8 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OperatorConstants;
+
 import org.littletonrobotics.junction.LoggedRobot;
 
 /**
@@ -52,7 +54,7 @@ public class Robot extends LoggedRobot {
             speed -> m_leftMotor.set(ControlMode.PercentOutput, speed),
             speed -> m_rightMotor.set(ControlMode.PercentOutput, speed));
 
-    m_DriverJoystick = new XboxController(DriveConstants.driverJoystickPort);
+    m_DriverJoystick = new XboxController(OperatorConstants.kDriverControllerPort);
   }
 
   public void teleopPeriodic() {
