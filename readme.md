@@ -14,11 +14,7 @@ For organization guidelines read: [Organizing Command-Based Robot Projects](http
 
 ## Appendix A: Gradle Commands
 
-This commandline commands can make it easier to work with our system. For instance, you can apply spotless and build at the same time by doing:
-
-```
-./gradlew spotlessApply build
-```
+This commandline commands can make it easier to work with our system. For instance, you can apply spotless and build at the same time by doing: `./gradlew spotlessApply build` but spotless is already ran on build.
 
 ### [Gradlew Tasks](https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/gradlew-tasks.html#gradlew-tasks)
 This article aims to highlight the gradle commands supported by the WPILib team for user use. These commands can be viewed by typing ./gradlew tasks at the root of your robot project. Not all commands shown in ./gradlew tasks and unsupported commands will not be documented here.
