@@ -25,6 +25,7 @@ public final class Constants {
     public static final int intakeMotor = 5;
     public static final int intakeMotor2 = 6;
   }
+
   public static class intakeConstants {
     public static final double firstMotorPercent = .15;
     public static final double secondMotorPercent = .3;

@@ -27,12 +27,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command runIntakeCommand() {
-    return new StartEndCommand(this::runIntake, this::stopMotors, this)
-    .withName("Run Intake");
+    return new StartEndCommand(this::runIntake, this::stopMotors, this).withName("Run Intake");
   }
 
   public Command reverseIntakeCommand() {
     return new StartEndCommand(this::reverseIntake, this::stopMotors, this)
-    .withName("Reverse Intake");
+        .withName("Reverse Intake");
   }
 }
