@@ -5,27 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterConstants;
-
-// Motor Configuration: Assume 2 motors for the shooter. They need to turn inwards towards each
-// other in the right direction for the note to be pulled and and shot out from intake. The specific
-// configuration can be figured out later when we can test.
-
-// User Interaction: On a certain interaction (trigger), such as a controller button press, the
-// shootCommand should start. This should only happen if there's a note and the right speed is
-// reached.
-
-// Logging: Log all actions performed by the motors for debugging and tracking purposes.
-
-// Tolerance Function: Implement a tolerance function that returns true or false. This function will
-// be used to determine whether the motors should shoot or not based on their current speed.
-
-// Finish Condition: Implement the isFinished method to determine when the shooting action is
-// done, might need to tie this in with intake to see if it is intaking.
-
-// Idle Speed: This in't an actual idle speed, but the speed is negative so that the note doesn't
-// get shot out prematurely, we will compose the intake and shooter for intaking, and shooting in
-// a command factory.
+import frc.robot.Constants;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final CANSparkMax shooterMotor;
@@ -34,22 +14,24 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     SendableRegistry.addLW(this, "ShooterSubsystem");
-    shooterMotor = new CANSparkMax(ShooterConstants.kShooterMotorPort2, MotorType.kBrushless);
-    shooterMotor2 = new CANSparkMax(ShooterConstants.kShooterMotorPort2, MotorType.kBrushless);
+    shooterMotor =
+        new CANSparkMax(Constants.DriveConstants.kShooterMotorPort2, MotorType.kBrushless);
+    shooterMotor2 =
+        new CANSparkMax(Constants.DriveConstants.kShooterMotorPort2, MotorType.kBrushless);
 
     shooterMotor.restoreFactoryDefaults();
     shooterMotor.setSmartCurrentLimit(40);
     shooterMotor2.restoreFactoryDefaults();
     shooterMotor2.setSmartCurrentLimit(40);
 
-    shooterMotor.getPIDController().setP(ShooterConstants.SHOOTER_P);
-    shooterMotor.getPIDController().setI(ShooterConstants.SHOOTER_I);
-    shooterMotor.getPIDController().setD(ShooterConstants.SHOOTER_D);
-    shooterMotor.getPIDController().setFF(ShooterConstants.SHOOTER_FF);
-    shooterMotor2.getPIDController().setP(ShooterConstants.SHOOTER_P);
-    shooterMotor2.getPIDController().setI(ShooterConstants.SHOOTER_I);
-    shooterMotor2.getPIDController().setD(ShooterConstants.SHOOTER_D);
-    shooterMotor2.getPIDController().setFF(ShooterConstants.SHOOTER_FF);
+    shooterMotor.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterMotor.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterMotor.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterMotor.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
+    shooterMotor2.getPIDController().setP(Constants.ShooterConstants.SHOOTER_P);
+    shooterMotor2.getPIDController().setI(Constants.ShooterConstants.SHOOTER_I);
+    shooterMotor2.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
+    shooterMotor2.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
 
     setIdleSpeed();
   }
@@ -87,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double currentSpeed1 = shooterMotor.getEncoder().getVelocity();
     double currentSpeed2 = shooterMotor2.getEncoder().getVelocity();
 
-    return Math.abs(currentSpeed1 - lastSetSpeed) < ShooterConstants.SHOOTER_ISDONE_SPEED
-        && Math.abs(currentSpeed2 - lastSetSpeed) < ShooterConstants.SHOOTER_ISDONE_SPEED;
+    return Math.abs(currentSpeed1 - lastSetSpeed) < Constants.ShooterConstants.SHOOTER_ISDONE_SPEED
+        && Math.abs(currentSpeed2 - lastSetSpeed) < Constants.ShooterConstants.SHOOTER_ISDONE_SPEED;
   }
 }
