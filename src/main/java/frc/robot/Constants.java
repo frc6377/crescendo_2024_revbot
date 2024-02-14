@@ -24,6 +24,17 @@ public final class Constants {
     public static final int kRightMotorPort2 = 4;
     public static final int intakeMotor = 5;
     public static final int intakeMotor2 = 6;
+    public static final int kShooterMotorPort = 7;
+    public static final int kShooterMotorPort2 = 8;
+  }
+
+  public static class ShooterConstants {
+    public static final int timeToShoot = 2;
+    public static final double SHOOTER_P = 0.1;
+    public static final double SHOOTER_I = 0;
+    public static final double SHOOTER_D = 0;
+    public static final double SHOOTER_FF = 0;
+    public static final double SHOOTER_ISDONE_SPEED = 0.01;
   }
 
   public static class intakeConstants {
