@@ -10,6 +10,7 @@ import frc.robot.subsystems.DriveTrainSubSystem;
 import org.littletonrobotics.junction.LoggedRobot;
 
 public class Robot extends LoggedRobot {
+  public static final boolean isCompetition = false;
   private XboxController m_DriverJoystick;
   private final DriveTrainSubSystem m_driveTrain = new DriveTrainSubSystem();
 
