@@ -16,7 +16,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    m_DriverJoystick = new XboxController(OperatorConstants.kDriverControllerPort);
+    m_DriverJoystick = new XboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
     m_driveTrain.setBrakeMode();
   }
 

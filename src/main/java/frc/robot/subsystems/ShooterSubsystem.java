@@ -21,9 +21,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem() {
     m_shooterMotor =
-        new CANSparkMax(Constants.DriveConstants.kShooterMotorPort, MotorType.kBrushless);
+        new CANSparkMax(Constants.DriveConstants.SHOOTER_MOTOR_PORT, MotorType.kBrushless);
     m_shooterMotor2 =
-        new CANSparkMax(Constants.DriveConstants.kShooterMotorPort2, MotorType.kBrushless);
+        new CANSparkMax(Constants.DriveConstants.SHOOTER_MOTOR_PORT_2, MotorType.kBrushless);
 
     m_shooterMotor.restoreFactoryDefaults();
     m_shooterMotor.setSmartCurrentLimit(40);
@@ -39,7 +39,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor2.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     m_shooterMotor2.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
 
-    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.kShooterMotorPort);
+    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.SHOOTER_MOTOR_PORT);
     SendableRegistry.setName(this, "ShooterSubsystem");
   }
 

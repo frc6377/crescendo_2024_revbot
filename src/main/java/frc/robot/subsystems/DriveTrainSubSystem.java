@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveTrainSubSystem extends SubsystemBase {
-  private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.kLeftMotorPort);
-  private final VictorSPX m_leftMotor2 = new VictorSPX(DriveConstants.kLeftMotorPort2);
-  private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.kRightMotorPort);
-  private final VictorSPX m_rightMotor2 = new VictorSPX(DriveConstants.kRightMotorPort2);
+  private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.LEFT_MOTOR_PORT);
+  private final VictorSPX m_leftMotor2 = new VictorSPX(DriveConstants.LEFT_MOTOR_PORT_2);
+  private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.RIGHT_MOTOR_PORT);
+  private final VictorSPX m_rightMotor2 = new VictorSPX(DriveConstants.RIGHT_MOTOR_PORT_2);
   private DifferentialDrive m_robotDrive;
 
   public DriveTrainSubSystem() {

@@ -25,9 +25,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public IntakeSubsystem() {
     m_intakeMotor =
-        new CANSparkMax(Constants.DriveConstants.kintakeMotorPort, MotorType.kBrushless);
+        new CANSparkMax(Constants.DriveConstants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
     m_intakeMotor2 =
-        new CANSparkMax(Constants.DriveConstants.kintakeMotorPort2, MotorType.kBrushless);
+        new CANSparkMax(Constants.DriveConstants.INTAKE_MOTOR_PORT_2, MotorType.kBrushless);
 
     m_intakeMotor.restoreFactoryDefaults();
     m_intakeMotor.setSmartCurrentLimit(40);
@@ -43,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor2.getPIDController().setD(Constants.IntakeConstants.INTAKE_D);
     m_intakeMotor2.getPIDController().setFF(Constants.IntakeConstants.INTAKE_FF);
 
-    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.kintakeMotorPort);
+    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.INTAKE_MOTOR_PORT);
     SendableRegistry.setName(this, "IntakeSubsystem");
   }
 
@@ -83,8 +83,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command runIntake() {
     return new WaitUntilIntakeDoneCommand(
         () -> {
-          m_intakeLastSetSpeed = Constants.IntakeConstants.firstMotorVelocity;
-          m_intake2LastSetSpeed = Constants.IntakeConstants.secondMotorVelocity;
+          m_intakeLastSetSpeed = Constants.IntakeConstants.FIRST_MOTOR_VELOCITY;
+          m_intake2LastSetSpeed = Constants.IntakeConstants.SECOND_MOTOR_VELOCITY;
           m_intakeMotor
               .getPIDController()
               .setReference(m_intakeLastSetSpeed, CANSparkBase.ControlType.kVelocity);
@@ -98,8 +98,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command reverseIntake() {
     return new InstantCommand(
         () -> {
-          m_intakeMotor.set(-Constants.IntakeConstants.firstMotorVelocity);
-          m_intakeMotor2.set(-Constants.IntakeConstants.secondMotorVelocity);
+          m_intakeMotor.set(-Constants.IntakeConstants.FIRST_MOTOR_VELOCITY);
+          m_intakeMotor2.set(-Constants.IntakeConstants.SECOND_MOTOR_VELOCITY);
         },
         this);
   }
