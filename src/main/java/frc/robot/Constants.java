@@ -34,13 +34,15 @@ public final class Constants {
     public static final double SHOOTER_I = 0;
     public static final double SHOOTER_D = 0;
     public static final double SHOOTER_FF = 0;
-    public static final double SHOOTER_ISDONE_SPEED = 0.01;
+    public static final double SHOOTER_TOLERANCE = 0.1;
     public static final double REVERSE_PERCENT = -0.1;
+    public static final double SHOOTER_RPM = 50;
   }
 
   public static class IntakeConstants {
     public static final double firstMotorVelocity = 20;
     public static final double secondMotorVelocity = 40;
+    public static final double INTAKE_TOLERANCE = 0.1;
     public static final double INTAKE_P = 0.1;
     public static final double INTAKE_I = 0;
     public static final double INTAKE_D = 0;

@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.DebugEntry;
@@ -74,26 +76,40 @@ public class ShooterSubsystem extends SubsystemBase {
         });
   }
 
-  public void setShooterSpeed(double speed) {
-    lastSetSpeed = speed;
-    m_shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
-    m_shooterMotor2.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
+  public Command setShooterSpeedCommand(double speed) {
+    return new WaitUntilShooterDoneCommand(
+        () -> {
+          lastSetSpeed = speed;
+          m_shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
+          m_shooterMotor2
+              .getPIDController()
+              .setReference(speed, CANSparkBase.ControlType.kVelocity);
+        },
+        this);
   }
 
-  public void reverseShooter() {
-    lastSetSpeed = Constants.ShooterConstants.REVERSE_PERCENT;
-    m_shooterMotor.set(lastSetSpeed);
-    m_shooterMotor2.set(lastSetSpeed);
+  public Command reverseShooterCommand() {
+    return new InstantCommand(
+        () -> {
+          lastSetSpeed = Constants.ShooterConstants.REVERSE_PERCENT;
+          m_shooterMotor.set(lastSetSpeed);
+          m_shooterMotor2.set(lastSetSpeed);
+        },
+        this);
   }
 
-  public void stopMotors() {
-    lastSetSpeed = 0.0;
-    m_shooterMotor
-        .getPIDController()
-        .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
-    m_shooterMotor2
-        .getPIDController()
-        .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
+  public Command stopMotors() {
+    return new WaitUntilShooterDoneCommand(
+        () -> {
+          lastSetSpeed = 0.0;
+          m_shooterMotor
+              .getPIDController()
+              .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
+          m_shooterMotor2
+              .getPIDController()
+              .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
+        },
+        this);
   }
 
   public double getSpeeds() {
@@ -114,12 +130,12 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor2.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
 
-  public boolean isAtSetSpeed() {
+  public boolean isAtSetSpeed(double tolerance) {
     double currentSpeed1 = m_shooterMotor.getEncoder().getVelocity();
     double currentSpeed2 = m_shooterMotor2.getEncoder().getVelocity();
 
-    return Math.abs(currentSpeed1 - lastSetSpeed) < Constants.ShooterConstants.SHOOTER_ISDONE_SPEED
-        && Math.abs(currentSpeed2 - lastSetSpeed) < Constants.ShooterConstants.SHOOTER_ISDONE_SPEED;
+    return Math.abs(currentSpeed1 - lastSetSpeed) < tolerance
+        && Math.abs(currentSpeed2 - lastSetSpeed) < tolerance;
   }
 
   @Override
@@ -127,5 +143,27 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterCurrentVoltage.log(m_shooterMotor.getBusVoltage());
     m_shooterCurrentVelocity.log(m_shooterMotor.getEncoder().getVelocity());
     m_shooterDesiredOutput.log(lastSetSpeed);
+  }
+}
+
+class WaitUntilShooterDoneCommand extends Command {
+  private final Runnable action;
+  private final ShooterSubsystem shooterSubsystem;
+
+  public WaitUntilShooterDoneCommand(Runnable action, ShooterSubsystem shooterSubsystem) {
+    super();
+    this.action = action;
+    this.shooterSubsystem = shooterSubsystem;
+  }
+
+  @Override
+  public void initialize() {
+    action.run();
+  }
+
+  @Override
+  public boolean isFinished() {
+    double tolerance = Constants.ShooterConstants.SHOOTER_TOLERANCE;
+    return shooterSubsystem.isAtSetSpeed(tolerance);
   }
 }

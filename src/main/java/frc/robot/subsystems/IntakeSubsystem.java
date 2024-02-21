@@ -5,21 +5,23 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.DebugEntry;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private final CANSparkMax m_intakeMotor;
-  private final CANSparkMax m_intakeMotor2;
+  public final CANSparkMax m_intakeMotor;
+  public final CANSparkMax m_intakeMotor2;
+  public double m_intakeLastSetSpeed = 0.0;
+  public double m_intake2LastSetSpeed = 0.0;
   private DebugEntry<Double> m_intakeCurrentVoltage;
   private DebugEntry<Double> m_intake2CurrentVoltage;
   private DebugEntry<Double> m_intakeCurrentVelocity;
   private DebugEntry<Double> m_intake2CurrentVelocity;
   private DebugEntry<Double> m_intakeDesiredOutput;
   private DebugEntry<Double> m_intake2DesiredOutput;
-  private double m_intakeLastSetSpeed = 0.0;
-  private double m_intake2LastSetSpeed = 0.0;
 
   public IntakeSubsystem() {
     m_intakeMotor =
@@ -41,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor2.getPIDController().setD(Constants.IntakeConstants.INTAKE_D);
     m_intakeMotor2.getPIDController().setFF(Constants.IntakeConstants.INTAKE_FF);
 
-    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.kShooterMotorPort);
+    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.kintakeMotorPort);
     SendableRegistry.setName(this, "IntakeSubsystem");
   }
 
@@ -78,29 +80,47 @@ public class IntakeSubsystem extends SubsystemBase {
         });
   }
 
-  public void runIntake() {
-    m_intakeLastSetSpeed = Constants.IntakeConstants.firstMotorVelocity;
-    m_intake2LastSetSpeed = Constants.IntakeConstants.secondMotorVelocity;
-    m_intakeMotor
-        .getPIDController()
-        .setReference(m_intakeLastSetSpeed, CANSparkBase.ControlType.kVelocity);
-    m_intakeMotor2
-        .getPIDController()
-        .setReference(m_intake2LastSetSpeed, CANSparkBase.ControlType.kVelocity);
+  public Command runIntake() {
+    return new WaitUntilIntakeDoneCommand(
+        () -> {
+          m_intakeLastSetSpeed = Constants.IntakeConstants.firstMotorVelocity;
+          m_intake2LastSetSpeed = Constants.IntakeConstants.secondMotorVelocity;
+          m_intakeMotor
+              .getPIDController()
+              .setReference(m_intakeLastSetSpeed, CANSparkBase.ControlType.kVelocity);
+          m_intakeMotor2
+              .getPIDController()
+              .setReference(m_intake2LastSetSpeed, CANSparkBase.ControlType.kVelocity);
+        },
+        this);
   }
 
-  public void reverseIntake() {
-    m_intakeLastSetSpeed = -Constants.IntakeConstants.firstMotorVelocity;
-    m_intake2LastSetSpeed = -Constants.IntakeConstants.secondMotorVelocity;
-    m_intakeMotor.set(m_intakeLastSetSpeed);
-    m_intakeMotor2.set(m_intake2LastSetSpeed);
+  public Command reverseIntake() {
+    return new InstantCommand(
+        () -> {
+          m_intakeMotor.set(-Constants.IntakeConstants.firstMotorVelocity);
+          m_intakeMotor2.set(-Constants.IntakeConstants.secondMotorVelocity);
+        },
+        this);
   }
 
-  public void stopMotors() {
-    m_intakeLastSetSpeed = 0.0;
-    m_intake2LastSetSpeed = 0.0;
-    m_intakeMotor.set(m_intakeLastSetSpeed);
-    m_intakeMotor2.set(m_intake2LastSetSpeed);
+  public Command stopMotors() {
+    return new InstantCommand(
+        () -> {
+          m_intakeLastSetSpeed = 0.0;
+          m_intake2LastSetSpeed = 0.0;
+          m_intakeMotor.set(m_intakeLastSetSpeed);
+          m_intakeMotor2.set(m_intake2LastSetSpeed);
+        },
+        this);
+  }
+
+  public boolean isAtSetSpeed(double tolerance) {
+    double intakeSpeedDiff =
+        Math.abs(m_intakeMotor.getEncoder().getVelocity() - m_intakeLastSetSpeed);
+    double intake2SpeedDiff =
+        Math.abs(m_intakeMotor2.getEncoder().getVelocity() - m_intake2LastSetSpeed);
+    return intakeSpeedDiff <= tolerance && intake2SpeedDiff <= tolerance;
   }
 
   @Override
@@ -111,5 +131,27 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intake2CurrentVelocity.log(m_intakeMotor2.getEncoder().getVelocity());
     m_intakeDesiredOutput.log(m_intakeLastSetSpeed);
     m_intake2DesiredOutput.log(m_intake2LastSetSpeed);
+  }
+}
+
+class WaitUntilIntakeDoneCommand extends Command {
+  private final Runnable action;
+  private final IntakeSubsystem intakeSubsystem;
+
+  public WaitUntilIntakeDoneCommand(Runnable action, IntakeSubsystem intakeSubsystem) {
+    super();
+    this.action = action;
+    this.intakeSubsystem = intakeSubsystem;
+  }
+
+  @Override
+  public void initialize() {
+    action.run();
+  }
+
+  @Override
+  public boolean isFinished() {
+    double tolerance = Constants.IntakeConstants.INTAKE_TOLERANCE;
+    return intakeSubsystem.isAtSetSpeed(tolerance);
   }
 }
