@@ -57,7 +57,7 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 m_intakeSubsystem.runIntake(),
-                m_shooterSubsystem.setShooterSpeedCommand(Constants.ShooterConstants.SHOOTER_RPM)));
+                m_shooterSubsystem.setShooterSpeedCommand(m_shooterSubsystem.SHOOTER_RPM)));
     m_driverController
         .b()
         .onFalse(

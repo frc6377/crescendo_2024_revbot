@@ -17,7 +17,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private DebugEntry<Double> m_shooterCurrentVoltage;
   private DebugEntry<Double> m_shooterCurrentVelocity;
   private DebugEntry<Double> m_shooterDesiredOutput;
-  private double lastSetSpeed = 0.0;
+  private double m_shooterLastSetSpeed = 0.0;
+  public double REVERSE_PERCENT = Constants.ShooterConstants.REVERSE_PERCENT;
+  public double SHOOTER_RPM = Constants.ShooterConstants.SHOOTER_RPM;
 
   public ShooterSubsystem() {
     m_shooterMotor =
@@ -39,13 +41,15 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor2.getPIDController().setD(Constants.ShooterConstants.SHOOTER_D);
     m_shooterMotor2.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
 
-    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.SHOOTER_MOTOR_PORT);
-    SendableRegistry.setName(this, "ShooterSubsystem");
+    SendableRegistry.addLW(this, "ShooterSubsystem");
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("PIDController");
+    builder.addDoubleProperty(
+        "REVERSE_PERCENT", () -> REVERSE_PERCENT, value -> REVERSE_PERCENT = value);
+    builder.addDoubleProperty("SHOOTER_RPM", () -> SHOOTER_RPM, value -> SHOOTER_RPM = value);
     builder.addDoubleProperty(
         "p",
         () -> m_shooterMotor.getPIDController().getP(),
@@ -79,7 +83,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command setShooterSpeedCommand(double speed) {
     return new WaitUntilShooterDoneCommand(
         () -> {
-          lastSetSpeed = speed;
+          m_shooterLastSetSpeed = speed;
           m_shooterMotor.getPIDController().setReference(speed, CANSparkBase.ControlType.kVelocity);
           m_shooterMotor2
               .getPIDController()
@@ -91,9 +95,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command reverseShooterCommand() {
     return new InstantCommand(
         () -> {
-          lastSetSpeed = Constants.ShooterConstants.REVERSE_PERCENT;
-          m_shooterMotor.set(lastSetSpeed);
-          m_shooterMotor2.set(lastSetSpeed);
+          m_shooterLastSetSpeed = REVERSE_PERCENT;
+          m_shooterMotor.set(m_shooterLastSetSpeed);
+          m_shooterMotor2.set(m_shooterLastSetSpeed);
         },
         this);
   }
@@ -101,13 +105,13 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command stopMotors() {
     return new WaitUntilShooterDoneCommand(
         () -> {
-          lastSetSpeed = 0.0;
+          m_shooterLastSetSpeed = 0.0;
           m_shooterMotor
               .getPIDController()
-              .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
+              .setReference(m_shooterLastSetSpeed, CANSparkBase.ControlType.kVelocity);
           m_shooterMotor2
               .getPIDController()
-              .setReference(lastSetSpeed, CANSparkBase.ControlType.kVelocity);
+              .setReference(m_shooterLastSetSpeed, CANSparkBase.ControlType.kVelocity);
         },
         this);
   }
@@ -134,26 +138,28 @@ public class ShooterSubsystem extends SubsystemBase {
     double currentSpeed1 = m_shooterMotor.getEncoder().getVelocity();
     double currentSpeed2 = m_shooterMotor2.getEncoder().getVelocity();
 
-    return Math.abs(currentSpeed1 - lastSetSpeed) < tolerance
-        && Math.abs(currentSpeed2 - lastSetSpeed) < tolerance;
+    return Math.abs(currentSpeed1 - m_shooterLastSetSpeed) < tolerance
+        && Math.abs(currentSpeed2 - m_shooterLastSetSpeed) < tolerance;
   }
 
   @Override
   public void periodic() {
     m_shooterCurrentVoltage.log(m_shooterMotor.getBusVoltage());
     m_shooterCurrentVelocity.log(m_shooterMotor.getEncoder().getVelocity());
-    m_shooterDesiredOutput.log(lastSetSpeed);
+    m_shooterDesiredOutput.log(m_shooterLastSetSpeed);
   }
 }
 
 class WaitUntilShooterDoneCommand extends Command {
   private final Runnable action;
   private final ShooterSubsystem shooterSubsystem;
+  public double SHOOTER_TOLERANCE = Constants.ShooterConstants.SHOOTER_TOLERANCE;
 
   public WaitUntilShooterDoneCommand(Runnable action, ShooterSubsystem shooterSubsystem) {
     super();
     this.action = action;
     this.shooterSubsystem = shooterSubsystem;
+    SendableRegistry.addLW(this, "WaitUntilShooterDoneCommand", "shooterTolerance");
   }
 
   @Override
@@ -162,8 +168,14 @@ class WaitUntilShooterDoneCommand extends Command {
   }
 
   @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addDoubleProperty(
+        "shooterTolerance", () -> SHOOTER_TOLERANCE, value -> SHOOTER_TOLERANCE = value);
+  }
+
+  @Override
   public boolean isFinished() {
-    double tolerance = Constants.ShooterConstants.SHOOTER_TOLERANCE;
+    double tolerance = SHOOTER_TOLERANCE;
     return shooterSubsystem.isAtSetSpeed(tolerance);
   }
 }
