@@ -22,6 +22,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private DebugEntry<Double> m_intake2CurrentVelocity;
   private DebugEntry<Double> m_intakeDesiredOutput;
   private DebugEntry<Double> m_intake2DesiredOutput;
+  public double FIRST_MOTOR_VELOCITY = Constants.IntakeConstants.FIRST_MOTOR_VELOCITY;
+  public double SECOND_MOTOR_VELOCITY = Constants.IntakeConstants.SECOND_MOTOR_VELOCITY;
 
   public IntakeSubsystem() {
     m_intakeMotor =
@@ -43,13 +45,18 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor2.getPIDController().setD(Constants.IntakeConstants.INTAKE_D);
     m_intakeMotor2.getPIDController().setFF(Constants.IntakeConstants.INTAKE_FF);
 
-    SendableRegistry.addLW(this, "PIDController", Constants.DriveConstants.INTAKE_MOTOR_PORT);
-    SendableRegistry.setName(this, "IntakeSubsystem");
+    SendableRegistry.addLW(this, "IntakeSubsystem");
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("PIDController");
+    builder.addDoubleProperty(
+        "FIRST_MOTOR_VELOCITY", () -> FIRST_MOTOR_VELOCITY, value -> FIRST_MOTOR_VELOCITY = value);
+    builder.addDoubleProperty(
+        "SECOND_MOTOR_VELOCITY",
+        () -> SECOND_MOTOR_VELOCITY,
+        value -> SECOND_MOTOR_VELOCITY = value);
     builder.addDoubleProperty(
         "p",
         () -> m_intakeMotor.getPIDController().getP(),
@@ -137,11 +144,13 @@ public class IntakeSubsystem extends SubsystemBase {
 class WaitUntilIntakeDoneCommand extends Command {
   private final Runnable action;
   private final IntakeSubsystem intakeSubsystem;
+  public double INTAKE_TOLERANCE = Constants.IntakeConstants.INTAKE_TOLERANCE;
 
   public WaitUntilIntakeDoneCommand(Runnable action, IntakeSubsystem intakeSubsystem) {
     super();
     this.action = action;
     this.intakeSubsystem = intakeSubsystem;
+    SendableRegistry.addLW(this, "WaitUntilIntakeDoneCommand");
   }
 
   @Override
@@ -150,8 +159,14 @@ class WaitUntilIntakeDoneCommand extends Command {
   }
 
   @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addDoubleProperty(
+        "shooterTolerance", () -> INTAKE_TOLERANCE, value -> INTAKE_TOLERANCE = value);
+  }
+
+  @Override
   public boolean isFinished() {
-    double tolerance = Constants.IntakeConstants.INTAKE_TOLERANCE;
+    double tolerance = INTAKE_TOLERANCE;
     return intakeSubsystem.isAtSetSpeed(tolerance);
   }
 }
