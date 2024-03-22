@@ -42,6 +42,9 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor2.getPIDController().setFF(Constants.ShooterConstants.SHOOTER_FF);
 
     SendableRegistry.addLW(this, "ShooterSubsystem");
+    m_shooterCurrentVoltage = new DebugEntry<Double>(0.0, "shooterMotor1_vo", this);
+    m_shooterCurrentVelocity = new DebugEntry<Double>(0.0, "shooterMotor2_ve", this);
+    m_shooterDesiredOutput = new DebugEntry<Double>(0.0, "shooterMotor1_de", this);
   }
 
   @Override
