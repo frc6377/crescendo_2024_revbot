@@ -46,6 +46,12 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeMotor2.getPIDController().setFF(Constants.IntakeConstants.INTAKE_FF);
 
     SendableRegistry.addLW(this, "IntakeSubsystem");
+    m_intakeCurrentVoltage = new DebugEntry<Double>(0.0, "intakeMotor1_vo", this);
+    m_intake2CurrentVoltage = new DebugEntry<Double>(0.0, "intakeMotor2_vo", this);
+    m_intakeCurrentVelocity = new DebugEntry<Double>(0.0, "intakeMotor2_ve", this);
+    m_intake2CurrentVelocity = new DebugEntry<Double>(0.0, "intakeMotor2_ve", this);
+    m_intakeDesiredOutput = new DebugEntry<Double>(0.0, "intakeMotor1_de", this);
+    m_intake2DesiredOutput = new DebugEntry<Double>(0.0, "intakeMotor2_de", this);
   }
 
   @Override
