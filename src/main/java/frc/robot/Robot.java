@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.ByteArrayInputStream;
@@ -43,7 +42,7 @@ public class Robot extends LoggedRobot {
     DataLogManager.logNetworkTables(true);
     DataLogManager.start();
     System.out.println("logging to " + DataLogManager.getLogDir());
-    Logger.recordMetadata("ProjectName", "6377_crescendo_2024_revbot");
+    Logger.recordMetadata("ProjectName", "6377_rodeo_2024");
     Logger.recordMetadata("Repository", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("Commit ID (GIT_SHA)", BuildConstants.GIT_SHA);
     Logger.recordMetadata("Branch Name", BuildConstants.GIT_BRANCH);
@@ -154,11 +153,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    if (!isCompetition) {
-      SmartDashboard.putData(CommandScheduler.getInstance());
-    }
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {}
