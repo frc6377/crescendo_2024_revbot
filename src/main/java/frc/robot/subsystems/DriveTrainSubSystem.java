@@ -5,10 +5,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import java.util.function.Supplier;
 
 public class DriveTrainSubSystem extends SubsystemBase {
+  public static final boolean kInvertLeftNotRight = false;
   private final VictorSPX m_leftMotor = new VictorSPX(DriveConstants.LEFT_MOTOR_PORT);
   private final VictorSPX m_leftMotor2 = new VictorSPX(DriveConstants.LEFT_MOTOR_PORT_2);
   private final VictorSPX m_rightMotor = new VictorSPX(DriveConstants.RIGHT_MOTOR_PORT);
@@ -24,7 +27,11 @@ public class DriveTrainSubSystem extends SubsystemBase {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_rightMotor.setInverted(true);
+    if (kInvertLeftNotRight) {
+      m_leftMotor.setInverted(true);
+    } else {
+      m_rightMotor.setInverted(true);
+    }
 
     m_robotDrive =
         new DifferentialDrive(
@@ -57,5 +64,13 @@ public class DriveTrainSubSystem extends SubsystemBase {
     m_leftMotor2.setNeutralMode(NeutralMode.Coast);
     m_rightMotor.setNeutralMode(NeutralMode.Coast);
     m_rightMotor2.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public Command arcadeDriveCmd(Supplier<Double> fwdSup, Supplier<Double> rotSup) {
+    return run(() -> arcadeDrive(fwdSup.get(), rotSup.get()));
+  }
+
+  public Command tankDriveCmd(Supplier<Double> leftSup, Supplier<Double> rightSup) {
+    return run(() -> tankDrive(leftSup.get(), rightSup.get()));
   }
 }
